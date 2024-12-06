@@ -74,7 +74,7 @@ export default function Home() {
           value={newItem}
           onChange={(e) => setNewItem(e.target.value)}
           placeholder="Agregá una nueva tarea"
-          className="w-full p-2 border border-gray-300 rounded mb-2"
+          className="w-full p-2 border rounded text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           onClick={handleAddItem}
@@ -91,19 +91,17 @@ export default function Home() {
             className="flex justify-between items-center p-2 border border-gray-300 rounded"
           >
             <span
-              className={`text-lg ${
-                todo.completed ? 'line-through text-gray-500' : ''
-              }`}
+              className={`text-lg ${todo.completed ? 'line-through text-gray-500' : ''
+                }`}
             >
               {todo.title}
             </span>
             <button
               onClick={() => toggleTodo(index)}
-              className={`px-4 py-2 rounded ${
-                todo.completed
+              className={`px-4 py-2 rounded ${todo.completed
                   ? 'bg-green-500 text-white'
                   : 'bg-red-500 text-white'
-              }`}
+                }`}
             >
               {todo.completed ? '✅' : '❌'}
             </button>
