@@ -16,10 +16,7 @@ export default function Home() {
     };
 
     try {
-      const res = await axios.post(
-        'https://cosas-por-hacer-diego-y-flor.vercel.app/api/todos',
-        newTodo
-      );
+      const res = await axios.post('/api/todos', newTodo);
       setItems([...items, res.data]);
       setNewItem('');
     } catch (error) {
@@ -30,7 +27,7 @@ export default function Home() {
   const getTodos = async () => {
     try {
       const res = await axios.get(
-        'https://cosas-por-hacer-diego-y-flor.vercel.app/api/todos'
+        '/api/todos'
       );
       setItems(res.data);
     } catch (error) {
@@ -48,7 +45,7 @@ export default function Home() {
 
     try {
       await axios.patch(
-        `https://cosas-por-hacer-diego-y-flor.vercel.app/api/todos/${updatedTodo._id}`,
+        `/api/todos/${updatedTodo._id}`,
         updatedItem
       );
 
