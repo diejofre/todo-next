@@ -6,6 +6,8 @@ import axios from 'axios';
 export default function Home() {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingValue, setEditingValue] = useState('');
 
   const handleAddItem = async () => {
     if (newItem.trim() === '') return;
@@ -26,9 +28,7 @@ export default function Home() {
 
   const getTodos = async () => {
     try {
-      const res = await axios.get(
-        '/api/todos'
-      );
+      const res = await axios.get('/api/todos');
       setItems(res.data);
     } catch (error) {
       console.error('Error al obtener los datos', error);
@@ -44,10 +44,7 @@ export default function Home() {
     };
 
     try {
-      await axios.patch(
-        `/api/todos/${updatedTodo._id}`,
-        updatedItem
-      );
+      await axios.patch(`/api/todos/${updatedTodo._id}`, updatedItem);
 
       const updatedItems = items.map((item, i) =>
         i === index ? updatedItem : item
@@ -55,6 +52,45 @@ export default function Home() {
       setItems(updatedItems);
     } catch (error) {
       console.error('Error al actualizar el item', error);
+    }
+  };
+
+  const deleteTodo = async (id) => {
+    try {
+      await axios.delete(`/api/todos/${id}`);
+      setItems(items.filter((item) => item._id !== id));
+    } catch (error) {
+      console.error('Error al eliminar el item', error);
+    }
+  };
+
+  const startEditing = (index) => {
+    setEditingIndex(index);
+    setEditingValue(items[index].title);
+  };
+
+  const cancelEditing = () => {
+    setEditingIndex(null);
+    setEditingValue('');
+  };
+
+  const saveEdit = async (index) => {
+    const updatedTodo = {
+      ...items[index],
+      title: editingValue,
+    };
+
+    try {
+      await axios.patch(`/api/todos/${updatedTodo._id}`, updatedTodo);
+
+      const updatedItems = items.map((item, i) =>
+        i === index ? updatedTodo : item
+      );
+      setItems(updatedItems);
+
+      cancelEditing();
+    } catch (error) {
+      console.error('Error al guardar los cambios', error);
     }
   };
 
@@ -90,21 +126,60 @@ export default function Home() {
             key={todo._id}
             className="flex justify-between items-center p-2 border border-gray-300 rounded"
           >
-            <span
-              className={`text-lg ${todo.completed ? 'line-through text-gray-500' : ''
-                }`}
-            >
-              {todo.title}
-            </span>
-            <button
-              onClick={() => toggleTodo(index)}
-              className={`px-4 py-2 rounded ${todo.completed
-                  ? 'bg-green-500 text-white'
-                  : 'bg-red-500 text-white'
-                }`}
-            >
-              {todo.completed ? '✅' : '❌'}
-            </button>
+            {editingIndex === index ? (
+              <input
+                type="text"
+                value={editingValue}
+                onChange={(e) => setEditingValue(e.target.value)}
+                className="flex-grow p-2 border rounded text-black"
+              />
+            ) : (
+              <span
+                className={`text-lg ${todo.completed ? 'line-through text-gray-500' : ''}`}
+              >
+                <button
+                    onClick={() => toggleTodo(index)}
+                    className={`px-4 py-2 rounded`}
+                  >
+                    {todo.completed ? '✅' : '🫵'}
+                  </button>
+                {todo.title}
+              </span>
+            )}
+
+            <div className="flex space-x-2">
+              {editingIndex === index ? (
+                <>
+                  <button
+                    onClick={() => saveEdit(index)}
+                    className="text-white px-2 py-2"
+                  >
+                    ✔️
+                  </button>
+                  <button
+                    onClick={cancelEditing}
+                    className="text-white py-2"
+                  >
+                    ❌
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => startEditing(index)}
+                    className="text-white px-4 py-2"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => deleteTodo(todo._id)}
+                    className="text-white py-2"
+                  >
+                    🗑️
+                  </button>
+                </>
+              )}
+            </div>
           </li>
         ))}
       </ul>

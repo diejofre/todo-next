@@ -25,3 +25,22 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ error: 'Failed to update todo' }, { status: 500 });
   }
 }
+
+export async function DELETE(request, { params }) {
+  try {
+    await dbConnect();
+
+    const { id } = params;
+
+    const deletedTodo = await todoModel.findByIdAndDelete(id);
+
+    if (!deletedTodo) {
+      return NextResponse.json({ error: 'Todo not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Todo deleted successfully' }, { status: 200 });
+  } catch (error) {
+    console.error('Error deleting todo:', error);
+    return NextResponse.json({ error: 'Failed to delete todo' }, { status: 500 });
+  }
+}
