@@ -141,7 +141,7 @@ export default function Home() {
                     onClick={() => toggleTodo(index)}
                     className={`px-4 py-2 rounded`}
                   >
-                    {todo.completed ? '✅' : '🫵'}
+                    {todo.completed ? '✅' : '⬜'}
                   </button>
                 {todo.title}
               </span>
